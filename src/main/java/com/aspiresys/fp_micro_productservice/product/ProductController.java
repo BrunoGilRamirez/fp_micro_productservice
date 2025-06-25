@@ -3,6 +3,9 @@ package com.aspiresys.fp_micro_productservice.product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.HashMap;
 
 import com.aspiresys.fp_micro_productservice.product.subclasses.clothes.Clothes;
 import com.aspiresys.fp_micro_productservice.product.subclasses.clothes.ClothesService;
@@ -15,13 +18,13 @@ import com.aspiresys.fp_micro_productservice.product.subclasses.electronics.smar
 @RequestMapping("/products")
 public class ProductController {
     @Autowired
-    private ProductService productService;
-    @Autowired
     private ElectronicsService electronicsService;
     @Autowired
     private SmartphoneService smartphoneService;
     @Autowired
     private ClothesService clothesService;
+    @Autowired
+    private ProductService productService;
 
     // CRUD para Clothes
     @PostMapping("/clothes")
@@ -108,5 +111,61 @@ public class ProductController {
     @DeleteMapping("/smartphones/{id}")
     public void deleteSmartphone(@PathVariable Long id) {
         smartphoneService.deleteSmartphone(id);
+    }
+
+    // Obtener todos los productos (de cualquier categoría)
+    @GetMapping("")
+    public List<Product> getAllProducts() {
+        return productService.getAllProducts();
+    }
+
+    // Endpoint para obtener todas las categorías disponibles
+    @GetMapping("/categories")
+    public List<String> getCategories() {
+        return Arrays.asList("clothes", "electronics", "smartphone");
+    }
+
+    // Endpoint para obtener ejemplos de bodys aceptados
+    @GetMapping("/body-examples")
+    public Map<String, Object> getBodyExamples() {
+        Map<String, Object> examples = new HashMap<>();
+        examples.put("clothes", Map.of(
+            "name", "Remera",
+            "price", 1000.0,
+            "category", "clothes",
+            "imageUrl", "url",
+            "stock", 10,
+            "size", "M",
+            "color", "Azul",
+            "fabricType", "Algodón"
+        ));
+        examples.put("electronics", Map.of(
+            "name", "Televisor",
+            "price", 50000.0,
+            "category", "electronics",
+            "imageUrl", "url",
+            "stock", 5,
+            "brand", "Samsung",
+            "model", "QLED",
+            "warrantyPeriod", "2 años",
+            "specifications", "4K UHD"
+        ));
+        Map<String, Object> smartphoneExample = new HashMap<>();
+        smartphoneExample.put("name", "iPhone 15");
+        smartphoneExample.put("price", 120000.0);
+        smartphoneExample.put("category", "smartphone");
+        smartphoneExample.put("imageUrl", "url");
+        smartphoneExample.put("stock", 3);
+        smartphoneExample.put("brand", "Apple");
+        smartphoneExample.put("model", "15 Pro");
+        smartphoneExample.put("warrantyPeriod", "1 año");
+        smartphoneExample.put("specifications", "128GB");
+        smartphoneExample.put("operatingSystem", "iOS");
+        smartphoneExample.put("storageCapacity", 128);
+        smartphoneExample.put("ram", 6);
+        smartphoneExample.put("processor", "A17");
+        smartphoneExample.put("screenSize", 6.1);
+        examples.put("smartphone", smartphoneExample);
+        return examples;
     }
 }
