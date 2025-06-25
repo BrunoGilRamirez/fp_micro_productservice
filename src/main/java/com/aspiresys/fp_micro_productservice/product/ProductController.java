@@ -16,6 +16,76 @@ import com.aspiresys.fp_micro_productservice.product.subclasses.electronics.Elec
 import com.aspiresys.fp_micro_productservice.product.subclasses.electronics.smartphone.Smartphone;
 import com.aspiresys.fp_micro_productservice.product.subclasses.electronics.smartphone.SmartphoneService;
 
+/**
+ * ProductController handles REST API endpoints for managing products in different categories:
+ * Clothes, Electronics, and Smartphones. It provides CRUD operations for each category,
+ * as well as endpoints to retrieve all products, available categories, and example request bodies.
+ *
+ * Endpoints:
+ * <ul>
+ *   <li><b>Clothes:</b>
+ *     <ul>
+ *       <li>POST /products/clothes - Create a new Clothes item</li>
+ *       <li>GET /products/clothes - Retrieve all Clothes items</li>
+ *       <li>GET /products/clothes/{id} - Retrieve a Clothes item by ID</li>
+ *       <li>PUT /products/clothes/{id} - Update a Clothes item by ID</li>
+ *       <li>DELETE /products/clothes/{id} - Delete a Clothes item by ID</li>
+ *     </ul>
+ *   </li>
+ *   <li><b>Electronics:</b>
+ *     <ul>
+ *       <li>POST /products/electronics - Create a new Electronics item</li>
+ *       <li>GET /products/electronics - Retrieve all Electronics items</li>
+ *       <li>GET /products/electronics/{id} - Retrieve an Electronics item by ID</li>
+ *       <li>PUT /products/electronics/{id} - Update an Electronics item by ID</li>
+ *       <li>DELETE /products/electronics/{id} - Delete an Electronics item by ID</li>
+ *     </ul>
+ *   </li>
+ *   <li><b>Smartphones:</b>
+ *     <ul>
+ *       <li>POST /products/smartphones - Create a new Smartphone item</li>
+ *       <li>GET /products/smartphones - Retrieve all Smartphone items</li>
+ *       <li>GET /products/smartphones/{id} - Retrieve a Smartphone item by ID</li>
+ *       <li>PUT /products/smartphones/{id} - Update a Smartphone item by ID</li>
+ *       <li>DELETE /products/smartphones/{id} - Delete a Smartphone item by ID</li>
+ *     </ul>
+ *   </li>
+ *   <li><b>General:</b>
+ *     <ul>
+ *       <li>GET /products - Retrieve all products (any category)</li>
+ *       <li>GET /products/categories - Retrieve available product categories</li>
+ *       <li>GET /products/body-examples - Retrieve example request bodies for each category</li>
+ *     </ul>
+ *   </li>
+ * </ul>
+ *
+ * All responses are wrapped in {@link AppResponse} for consistent API responses.
+ *
+ * Services injected:
+ * <ul>
+ *   <li>{@link ElectronicsService}</li>
+ *   <li>{@link SmartphoneService}</li>
+ *   <li>{@link ClothesService}</li>
+ *   <li>{@link ProductService}</li>
+ * </ul>
+ *
+ * Example usage:
+ * <pre>
+ *   POST /products/clothes
+ *   {
+ *     "name": "Remera",
+ *     "price": 1000.0,
+ *     "category": "clothes",
+ *     "imageUrl": "url",
+ *     "stock": 10,
+ *     "size": "M",
+ *     "color": "Azul",
+ *     "fabricType": "Algodón"
+ *   }
+ * </pre>
+ *
+ * @author bruno.gil
+ */
 @RestController
 @RequestMapping("/products")
 public class ProductController {

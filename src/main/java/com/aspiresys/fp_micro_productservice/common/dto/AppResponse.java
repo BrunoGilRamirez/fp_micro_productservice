@@ -1,5 +1,10 @@
 package com.aspiresys.fp_micro_productservice.common.dto;
 
+/**
+ * A generic response wrapper class used to standardize API responses.
+ *
+ * @param <T> the type of the response data
+ */
 public class AppResponse<T> {
     private String message;
     private T data;

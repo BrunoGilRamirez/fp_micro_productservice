@@ -5,6 +5,22 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service implementation for managing {@link Smartphone} entities.
+ * Provides methods to save, retrieve, and delete smartphones using the {@link SmartphoneRepository}.
+ *
+ * <p>This class is annotated with {@code @Service} to indicate that it's a Spring service component.
+ * It implements the {@link SmartphoneService} interface.</p>
+ *
+ * <ul>
+ *   <li>{@link #saveSmartphone(Smartphone)} - Saves a smartphone entity to the repository.</li>
+ *   <li>{@link #getAllSmartphones()} - Retrieves all smartphones from the repository.</li>
+ *   <li>{@link #getSmartphoneById(Long)} - Retrieves a smartphone by its ID.</li>
+ *   <li>{@link #deleteSmartphone(Long)} - Deletes a smartphone by its ID.</li>
+ * </ul>
+ *
+ * @author bruno.gil
+ */
 @Service
 public class SmartphoneServiceImpl implements SmartphoneService {
     @Autowired

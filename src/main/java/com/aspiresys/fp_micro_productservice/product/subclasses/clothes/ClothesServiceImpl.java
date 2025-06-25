@@ -5,6 +5,27 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service implementation for managing Clothes entities.
+ * Provides methods to save, retrieve, and delete clothes using the ClothesRepository.
+ *
+ * This class is annotated with {@link org.springframework.stereotype.Service} to indicate
+ * that it's a service component in the Spring context.
+ *
+ * Methods:
+ * <ul>
+ *   <li>{@link #saveClothes(Clothes)} - Saves a Clothes entity to the repository.</li>
+ *   <li>{@link #getAllClothes()} - Retrieves all Clothes entities from the repository.</li>
+ *   <li>{@link #getClothesById(Long)} - Retrieves a Clothes entity by its ID.</li>
+ *   <li>{@link #deleteClothes(Long)} - Deletes a Clothes entity by its ID.</li>
+ * </ul>
+ *
+ * Dependencies are injected using {@link org.springframework.beans.factory.annotation.Autowired}.
+ * 
+ * @author bruno.gil
+ * @see ClothesService
+ * @see ClothesRepository
+ */
 @Service
 public class ClothesServiceImpl implements ClothesService {
     @Autowired

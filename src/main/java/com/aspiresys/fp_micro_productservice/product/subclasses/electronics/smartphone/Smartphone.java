@@ -4,6 +4,16 @@ import com.aspiresys.fp_micro_productservice.product.subclasses.electronics.Elec
 import jakarta.persistence.Entity;
 import lombok.*;
 
+
+/**
+ * Represents a Smartphone entity, which is a subclass of {@link Electronics}.
+ * <p>
+ * This class contains properties specific to smartphones, such as operating system,
+ * storage capacity, RAM, processor, and screen size.
+ * </p>
+ *
+ * @author bruno.gil
+ */
 @Entity
 @Getter
 @Setter
