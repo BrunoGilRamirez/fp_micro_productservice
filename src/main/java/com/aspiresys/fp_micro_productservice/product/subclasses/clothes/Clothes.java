@@ -20,7 +20,14 @@ import lombok.*;
 @Entity
 @Table(
     uniqueConstraints = @jakarta.persistence.UniqueConstraint(
-        columnNames = {"name", "category", "brand", "size", "color", "fabricType"}
+        columnNames = {
+            "name", 
+            "category",
+            "imageUrl",
+            "brand", 
+            "size", 
+            "color", 
+            "fabricType"}
     )
 )
 @Getter

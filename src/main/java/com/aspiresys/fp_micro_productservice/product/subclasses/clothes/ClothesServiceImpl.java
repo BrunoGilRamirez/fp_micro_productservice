@@ -2,6 +2,9 @@ package com.aspiresys.fp_micro_productservice.product.subclasses.clothes;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.aspiresys.fp_micro_productservice.product.ProductException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +36,18 @@ public class ClothesServiceImpl implements ClothesService {
 
     @Override
     public Clothes saveClothes(Clothes clothes) {
-        return clothesRepository.save(clothes);
+        try{
+            return clothesRepository.save(clothes);
+        } catch (Exception ex) {
+            throw new ProductException().duplicateProduct("This clothes already exists with the same attributes: " + 
+                "name=" + clothes.getName() + 
+                ", category=" + clothes.getCategory() + 
+                ", imageUrl=" + clothes.getImageUrl() + 
+                ", brand=" + clothes.getBrand() + 
+                ", size=" + clothes.getSize() + 
+                ", color=" + clothes.getColor() + 
+                ", fabricType=" + clothes.getFabricType());
+        }
     }
 
     @Override
