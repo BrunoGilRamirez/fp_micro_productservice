@@ -7,4 +7,5 @@ public interface ClothesService {
     List<Clothes> getAllClothes();
     Clothes getClothesById(Long id);
     void deleteClothes(Long id);
+    boolean exist(Clothes clothes);
 }

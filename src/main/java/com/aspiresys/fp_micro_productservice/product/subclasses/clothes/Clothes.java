@@ -4,7 +4,7 @@ package com.aspiresys.fp_micro_productservice.product.subclasses.clothes;
 import com.aspiresys.fp_micro_productservice.product.Product;
 
 import jakarta.persistence.Entity;
-
+import jakarta.persistence.Table;
 import lombok.*;
 
 
@@ -18,12 +18,19 @@ import lombok.*;
  * @author bruno.gil
  */
 @Entity
+@Table(
+    uniqueConstraints = @jakarta.persistence.UniqueConstraint(
+        columnNames = {"name", "category", "brand", "size", "color", "fabricType"}
+    )
+)
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class Clothes extends Product {
-
+    private String brand;
     private String size;
     private String color;
     private String fabricType;

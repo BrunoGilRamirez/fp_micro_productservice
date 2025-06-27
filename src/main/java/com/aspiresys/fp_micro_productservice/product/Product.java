@@ -38,6 +38,8 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
+@EqualsAndHashCode
 public abstract class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

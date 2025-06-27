@@ -1,14 +1,14 @@
 package com.aspiresys.fp_micro_productservice.product;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.HashMap;
 
 import com.aspiresys.fp_micro_productservice.common.dto.AppResponse;
+import com.aspiresys.fp_micro_productservice.product.ProductUtils.TupleResponse;
 import com.aspiresys.fp_micro_productservice.product.subclasses.clothes.Clothes;
 import com.aspiresys.fp_micro_productservice.product.subclasses.clothes.ClothesService;
 import com.aspiresys.fp_micro_productservice.product.subclasses.electronics.Electronics;
@@ -49,12 +49,10 @@ import com.aspiresys.fp_micro_productservice.product.subclasses.electronics.smar
  *       <li>PUT /products/smartphones/{id} - Update a Smartphone item by ID</li>
  *       <li>DELETE /products/smartphones/{id} - Delete a Smartphone item by ID</li>
  *     </ul>
- *   </li>
- *   <li><b>General:</b>
+ *   </li>   *   <li><b>General:</b>
  *     <ul>
  *       <li>GET /products - Retrieve all products (any category)</li>
  *       <li>GET /products/categories - Retrieve available product categories</li>
- *       <li>GET /products/body-examples - Retrieve example request bodies for each category</li>
  *     </ul>
  *   </li>
  * </ul>
@@ -101,6 +99,13 @@ public class ProductController {
     // CRUD para Clothes
     @PostMapping("/clothes")
     public ResponseEntity<AppResponse<Clothes>> createClothes(@RequestBody Clothes clothes) {
+        TupleResponse<Boolean, String> validation = ProductUtils.isAValidProduct(clothes);
+        if (!validation.getFirst()) {
+            return ResponseEntity.badRequest().body(new AppResponse<>("Invalid clothes data: " + validation.getSecond(), null));
+        }
+        if(clothesService.exist(clothes)){
+            return ResponseEntity.badRequest().body(new AppResponse<>("Clothes with these attributes already exists.", null));
+        }
         Clothes createdClothes = clothesService.saveClothes(clothes);
         return ResponseEntity.ok(new AppResponse<>("Clothes created successfully", createdClothes));
     }
@@ -123,6 +128,10 @@ public class ProductController {
     @PutMapping("/clothes/{id}")
     public ResponseEntity<AppResponse<Clothes>> updateClothes(@PathVariable Long id, @RequestBody Clothes clothes) {
         Clothes existing = clothesService.getClothesById(id);
+        TupleResponse<Boolean, String> validation = ProductUtils.isAValidProduct(clothes);
+        if (!validation.getFirst()) {
+            return ResponseEntity.badRequest().body(new AppResponse<>("Invalid clothes data: " + validation.getSecond(), null));
+        }
         if (existing == null) {
             return ResponseEntity.status(404).body(new AppResponse<>("Clothes not found", null));
         }
@@ -141,12 +150,6 @@ public class ProductController {
         return ResponseEntity.ok(new AppResponse<>("Clothes deleted successfully", true));
     }
 
-    // CRUD para Electronics
-    @PostMapping("/electronics")
-    public ResponseEntity<AppResponse<Electronics>> createElectronics(@RequestBody Electronics electronics) {
-        Electronics created = electronicsService.saveElectronics(electronics);
-        return ResponseEntity.ok(new AppResponse<>("Electronics created successfully", created));
-    }
 
     @GetMapping("/electronics")
     public ResponseEntity<AppResponse<List<Electronics>>> getAllElectronics() {
@@ -163,17 +166,6 @@ public class ProductController {
         return ResponseEntity.ok(new AppResponse<>("Electronics found", electronics));
     }
 
-    @PutMapping("/electronics/{id}")
-    public ResponseEntity<AppResponse<Electronics>> updateElectronics(@PathVariable Long id, @RequestBody Electronics electronics) {
-        Electronics existing = electronicsService.getElectronicsById(id);
-        if (existing == null) {
-            return ResponseEntity.status(404).body(new AppResponse<>("Electronics not found", null));
-        }
-        electronics.setId(id);
-        Electronics updated = electronicsService.saveElectronics(electronics);
-        return ResponseEntity.ok(new AppResponse<>("Electronics updated successfully", updated));
-    }
-
     @DeleteMapping("/electronics/{id}")
     public ResponseEntity<AppResponse<Boolean>> deleteElectronics(@PathVariable Long id) {
         Electronics existing = electronicsService.getElectronicsById(id);
@@ -187,8 +179,20 @@ public class ProductController {
     // CRUD para Smartphone
     @PostMapping("/smartphones")
     public ResponseEntity<AppResponse<Smartphone>> createSmartphone(@RequestBody Smartphone smartphone) {
-        Smartphone created = smartphoneService.saveSmartphone(smartphone);
-        return ResponseEntity.ok(new AppResponse<>("Smartphone created successfully", created));
+        smartphone.setCategory("smartphone"); // Ensure category is set
+        TupleResponse<Boolean, String> validation = ProductUtils.isAValidProduct(smartphone);
+        if (!validation.getFirst()) {
+            return ResponseEntity.badRequest().body(new AppResponse<>("Invalid smartphone data: " + validation.getSecond(), null));
+        }
+        if(smartphoneService.exists(smartphone)){
+            return ResponseEntity.badRequest().body(new AppResponse<>("Smartphone with these attributes already exists.", null));
+        }
+        try {
+            Smartphone created = smartphoneService.saveSmartphone(smartphone);
+            return ResponseEntity.ok(new AppResponse<>("Smartphone created successfully", created));
+        }catch (DataIntegrityViolationException ex) {
+            return ResponseEntity.badRequest().body(new AppResponse<>("Ya existe un smartphone con esa combinación de atributos.", null));
+        }
     }
 
     @GetMapping("/smartphones")
@@ -241,47 +245,4 @@ public class ProductController {
         return ResponseEntity.ok(new AppResponse<>("Categories retrieved successfully", categories));
     }
 
-    // Endpoint para obtener ejemplos de bodys aceptados
-    @GetMapping("/body-examples")
-    public ResponseEntity<AppResponse<Map<String, Object>>> getBodyExamples() {
-        Map<String, Object> examples = new HashMap<>();
-        examples.put("clothes", Map.of(
-            "name", "Remera",
-            "price", 1000.0,
-            "category", "clothes",
-            "imageUrl", "url",
-            "stock", 10,
-            "size", "M",
-            "color", "Azul",
-            "fabricType", "Algodón"
-        ));
-        examples.put("electronics", Map.of(
-            "name", "Televisor",
-            "price", 50000.0,
-            "category", "electronics",
-            "imageUrl", "url",
-            "stock", 5,
-            "brand", "Samsung",
-            "model", "QLED",
-            "warrantyPeriod", "2 años",
-            "specifications", "4K UHD"
-        ));
-        Map<String, Object> smartphoneExample = new HashMap<>();
-        smartphoneExample.put("name", "iPhone 15");
-        smartphoneExample.put("price", 120000.0);
-        smartphoneExample.put("category", "smartphone");
-        smartphoneExample.put("imageUrl", "url");
-        smartphoneExample.put("stock", 3);
-        smartphoneExample.put("brand", "Apple");
-        smartphoneExample.put("model", "15 Pro");
-        smartphoneExample.put("warrantyPeriod", "1 año");
-        smartphoneExample.put("specifications", "128GB");
-        smartphoneExample.put("operatingSystem", "iOS");
-        smartphoneExample.put("storageCapacity", 128);
-        smartphoneExample.put("ram", 6);
-        smartphoneExample.put("processor", "A17");
-        smartphoneExample.put("screenSize", 6.1);
-        examples.put("smartphone", smartphoneExample);
-        return ResponseEntity.ok(new AppResponse<>("Body examples retrieved successfully", examples));
-    }
 }

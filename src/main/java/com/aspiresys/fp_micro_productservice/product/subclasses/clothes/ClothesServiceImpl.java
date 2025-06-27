@@ -51,4 +51,22 @@ public class ClothesServiceImpl implements ClothesService {
     public void deleteClothes(Long id) {
         clothesRepository.deleteById(id);
     }
+
+    @Override
+    public boolean exist(Clothes clothes) {
+        List<Clothes> existingClothes = clothesRepository.findAll();
+        for (Clothes existing : existingClothes) {
+            if (existing.getName().equals(clothes.getName()) &&
+                existing.getPrice() == clothes.getPrice() &&
+                existing.getCategory().equals(clothes.getCategory()) &&
+                existing.getImageUrl().equals(clothes.getImageUrl()) &&
+                existing.getBrand().equals(clothes.getBrand()) &&
+                existing.getSize().equals(clothes.getSize()) &&
+                existing.getColor().equals(clothes.getColor()) &&
+                existing.getFabricType().equals(clothes.getFabricType())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

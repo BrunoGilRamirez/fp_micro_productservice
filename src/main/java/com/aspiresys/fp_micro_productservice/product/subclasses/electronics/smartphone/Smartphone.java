@@ -2,6 +2,7 @@ package com.aspiresys.fp_micro_productservice.product.subclasses.electronics.sma
 
 import com.aspiresys.fp_micro_productservice.product.subclasses.electronics.Electronics;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.*;
 
 
@@ -15,10 +16,28 @@ import lombok.*;
  * @author bruno.gil
  */
 @Entity
+@Table(
+    uniqueConstraints = @jakarta.persistence.UniqueConstraint(
+        columnNames = {
+            "name",
+            "category",
+            "imageUrl",
+            "brand",
+            "operatingSystem",
+            "storageCapacity",
+            "ram",
+            "processor",
+            "screenSize"
+        }
+    )
+)
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+@Builder
 public class Smartphone extends Electronics {
     private String operatingSystem;
     private int storageCapacity;

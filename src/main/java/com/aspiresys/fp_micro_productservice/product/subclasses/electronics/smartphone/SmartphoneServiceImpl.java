@@ -46,4 +46,36 @@ public class SmartphoneServiceImpl implements SmartphoneService {
     public void deleteSmartphone(Long id) {
         smartphoneRepository.deleteById(id);
     }
+
+    @Override
+    public Smartphone updateSmartphone(Long id, Smartphone smartphone) {
+        // TODO Auto-generated method stub
+        Optional<Smartphone> existingSmartphone = smartphoneRepository.findById(id);
+        if (existingSmartphone.isPresent()) {
+            Smartphone updatedSmartphone = existingSmartphone.get();
+            updatedSmartphone.setName(smartphone.getName());
+            updatedSmartphone.setPrice(smartphone.getPrice());
+            updatedSmartphone.setCategory(smartphone.getCategory());
+            updatedSmartphone.setImageUrl(smartphone.getImageUrl());
+            updatedSmartphone.setStock(smartphone.getStock());
+            updatedSmartphone.setOperatingSystem(smartphone.getOperatingSystem());
+            updatedSmartphone.setStorageCapacity(smartphone.getStorageCapacity());
+            updatedSmartphone.setRam(smartphone.getRam());
+            updatedSmartphone.setProcessor(smartphone.getProcessor());
+            updatedSmartphone.setScreenSize(smartphone.getScreenSize());
+            return smartphoneRepository.save(updatedSmartphone);
+        }
+        return null; // or throw an exception if preferred
+    }
+
+    @Override
+    public boolean exists(Smartphone smartphone) {
+        List<Smartphone> smartphones = smartphoneRepository.findAll();
+        for (Smartphone existingSmartphone : smartphones) {
+            if (existingSmartphone.equals(smartphone)) {
+                return true; // Smartphone already exists
+            }
+        }
+        return false; // Smartphone does not exist
+    }
 }

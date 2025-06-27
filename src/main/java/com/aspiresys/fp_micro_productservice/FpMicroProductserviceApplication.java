@@ -30,6 +30,7 @@ public class FpMicroProductserviceApplication {
 			   c1.setPrice(199.99);
 			   c1.setCategory("Clothing");
 			   c1.setImageUrl("https://ejemplo.com/camiseta.jpg");
+			   c1.setBrand("PremiumWear");
 			   c1.setSize("M");
 			   c1.setColor("Blue");
 			   c1.setFabricType("Cotton");
@@ -41,6 +42,7 @@ public class FpMicroProductserviceApplication {
 			   c2.setPrice(299.99);
 			   c2.setCategory("Clothing");
 			   c2.setImageUrl("https://ejemplo.com/pantalon.jpg");
+			   c2.setBrand("ActiveGear");
 			   c2.setSize("L");
 			   c2.setColor("Black");
 			   c2.setFabricType("Polyester");
