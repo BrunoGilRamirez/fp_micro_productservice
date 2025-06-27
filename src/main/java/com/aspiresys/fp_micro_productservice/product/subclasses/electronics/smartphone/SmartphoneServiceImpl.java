@@ -2,6 +2,9 @@ package com.aspiresys.fp_micro_productservice.product.subclasses.electronics.sma
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.aspiresys.fp_micro_productservice.product.ProductException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +31,21 @@ public class SmartphoneServiceImpl implements SmartphoneService {
 
     @Override
     public Smartphone saveSmartphone(Smartphone smartphone) {
-        return smartphoneRepository.save(smartphone);
+        try{
+            return smartphoneRepository.save(smartphone);
+        } catch (Exception ex) {
+            throw new ProductException().duplicateProduct("This smartphone already exists with the same attributes: " + 
+                "name=" + smartphone.getName() + 
+                ", category=" + smartphone.getCategory() + 
+                ", imageUrl=" + smartphone.getImageUrl() + 
+                ", brand=" + smartphone.getBrand() + 
+                ", operatingSystem=" + smartphone.getOperatingSystem() + 
+                ", storageCapacity=" + smartphone.getStorageCapacity() + 
+                ", ram=" + smartphone.getRam() + 
+                ", processor=" + smartphone.getProcessor() + 
+                ", screenSize=" + smartphone.getScreenSize());
+    
+        }
     }
 
     @Override
@@ -72,7 +89,9 @@ public class SmartphoneServiceImpl implements SmartphoneService {
     public boolean exists(Smartphone smartphone) {
         List<Smartphone> smartphones = smartphoneRepository.findAll();
         for (Smartphone existingSmartphone : smartphones) {
-            if (existingSmartphone.equals(smartphone)) {
+            boolean flag= existingSmartphone.equals(smartphone);
+            System.out.println("Comparing: " + existingSmartphone + " with " + smartphone + " - Result: " + flag);
+            if (flag) {
                 return true; // Smartphone already exists
             }
         }

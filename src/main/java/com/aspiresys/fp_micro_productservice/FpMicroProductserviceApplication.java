@@ -28,7 +28,7 @@ public class FpMicroProductserviceApplication {
 			   c1.setStock(100);
 			   c1.setName("Basic T-shirt");
 			   c1.setPrice(199.99);
-			   c1.setCategory("Clothing");
+			   c1.setCategory("clothes");
 			   c1.setImageUrl("https://ejemplo.com/camiseta.jpg");
 			   c1.setBrand("PremiumWear");
 			   c1.setSize("M");
@@ -40,7 +40,7 @@ public class FpMicroProductserviceApplication {
 			   c2.setStock(50);
 			   c2.setName("Sports Pants");
 			   c2.setPrice(299.99);
-			   c2.setCategory("Clothing");
+			   c2.setCategory("clothes");
 			   c2.setImageUrl("https://ejemplo.com/pantalon.jpg");
 			   c2.setBrand("ActiveGear");
 			   c2.setSize("L");
@@ -53,7 +53,7 @@ public class FpMicroProductserviceApplication {
 			   s1.setStock(30);
 			   s1.setName("Smartphone X1");
 			   s1.setPrice(5999.99);
-			   s1.setCategory("Electronics");
+			   s1.setCategory("smartphone");
 			   s1.setImageUrl("https://ejemplo.com/smartphone.jpg");
 			   s1.setBrand("BrandX");
 			   s1.setModel("X1");
@@ -70,7 +70,7 @@ public class FpMicroProductserviceApplication {
 			   s2.setStock(20);
 			   s2.setName("Smartphone Y2");
 			   s2.setPrice(7999.99);
-			   s2.setCategory("Electronics");
+			   s2.setCategory("smartphone");
 			   s2.setImageUrl("https://ejemplo.com/smartphone2.jpg");
 			   s2.setBrand("BrandY");
 			   s2.setModel("Y2");

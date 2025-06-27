@@ -1,7 +1,6 @@
 package com.aspiresys.fp_micro_productservice.product;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -15,6 +14,8 @@ import com.aspiresys.fp_micro_productservice.product.subclasses.electronics.Elec
 import com.aspiresys.fp_micro_productservice.product.subclasses.electronics.ElectronicsService;
 import com.aspiresys.fp_micro_productservice.product.subclasses.electronics.smartphone.Smartphone;
 import com.aspiresys.fp_micro_productservice.product.subclasses.electronics.smartphone.SmartphoneService;
+
+import lombok.extern.java.Log;
 
 /**
  * ProductController handles REST API endpoints for managing products in different categories:
@@ -86,6 +87,7 @@ import com.aspiresys.fp_micro_productservice.product.subclasses.electronics.smar
  */
 @RestController
 @RequestMapping("/products")
+@Log
 public class ProductController {
     @Autowired
     private ElectronicsService electronicsService;
@@ -184,14 +186,21 @@ public class ProductController {
         if (!validation.getFirst()) {
             return ResponseEntity.badRequest().body(new AppResponse<>("Invalid smartphone data: " + validation.getSecond(), null));
         }
-        if(smartphoneService.exists(smartphone)){
-            return ResponseEntity.badRequest().body(new AppResponse<>("Smartphone with these attributes already exists.", null));
-        }
         try {
             Smartphone created = smartphoneService.saveSmartphone(smartphone);
             return ResponseEntity.ok(new AppResponse<>("Smartphone created successfully", created));
-        }catch (DataIntegrityViolationException ex) {
-            return ResponseEntity.badRequest().body(new AppResponse<>("Ya existe un smartphone con esa combinación de atributos.", null));
+        } catch (ProductException ex) {
+            log.warning("Error creating smartphone: " + ex.getMessage());
+            return ResponseEntity.badRequest().body(new AppResponse<>(("Smartphone with these attributes already exists: " + 
+                "name=" + smartphone.getName() + 
+                ", category=" + smartphone.getCategory() + 
+                ", imageUrl=" + smartphone.getImageUrl() + 
+                ", brand=" + smartphone.getBrand() + 
+                ", operatingSystem=" + smartphone.getOperatingSystem() + 
+                ", storageCapacity=" + smartphone.getStorageCapacity() + 
+                ", ram=" + smartphone.getRam() + 
+                ", processor=" + smartphone.getProcessor() + 
+                ", screenSize=" + smartphone.getScreenSize()), null));
         }
     }
 

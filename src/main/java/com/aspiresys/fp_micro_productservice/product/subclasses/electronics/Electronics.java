@@ -12,6 +12,9 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+
 public abstract class Electronics extends Product {
 
     private String brand;

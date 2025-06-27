@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
 import lombok.*;
 
 /**
@@ -34,6 +35,13 @@ import lombok.*;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@Table(uniqueConstraints = @jakarta.persistence.UniqueConstraint(
+        columnNames = {
+            "name",
+            "category",
+            "imageUrl"
+        }
+    ))
 @Getter
 @Setter
 @AllArgsConstructor
