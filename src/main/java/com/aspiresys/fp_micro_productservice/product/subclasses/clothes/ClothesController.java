@@ -2,6 +2,7 @@ package com.aspiresys.fp_micro_productservice.product.subclasses.clothes;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -53,7 +54,18 @@ public class ClothesController {
     @Autowired
     private ClothesService clothesService;
 
+    /**
+     * Creates a new Clothes item.
+     * <p>
+     * This endpoint requires ADMIN role for authorization.
+     * Only administrators can create new clothes products.
+     * </p>
+     *
+     * @param clothes the Clothes item to create
+     * @return ResponseEntity containing the created Clothes item wrapped in AppResponse
+     */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AppResponse<Clothes>> createClothes(@RequestBody Clothes clothes) {
         TupleResponse<Boolean, String> validation = ProductUtils.isAValidProduct(clothes);
         if (!validation.getFirst()) {
@@ -78,12 +90,33 @@ public class ClothesController {
         }
     }
 
+    /**
+     * Retrieves all Clothes items.
+     * <p>
+     * This endpoint must be public and accessible without authentication. When auth is implemented for this application,
+     * it should be accessible to all users, including unauthenticated ones.
+     * 
+     * @return ResponseEntity containing a list of Clothes items wrapped in AppResponse
+     * If no Clothes items are found, returns an empty list with a success message.
+     * </p>
+     */
     @GetMapping
     public ResponseEntity<AppResponse<List<Clothes>>> getAllClothes() {
         List<Clothes> clothesList = clothesService.getAllClothes();
         return ResponseEntity.ok(new AppResponse<>("Clothes list retrieved successfully", clothesList));
     }
 
+    /**
+     * Retrieves a Clothes item by its ID.
+     * <p>
+     * This endpoint must be public and accessible without authentication. When auth is implemented for this application,
+     * it should be accessible to all users, including unauthenticated ones.
+     * 
+     * @param id the ID of the Clothes item
+     * @return ResponseEntity containing the Clothes item wrapped in AppResponse
+     * If the Clothes item is not found, returns a 404 status with an error message.
+     * </p>
+     */
     @GetMapping("/{id}")
     public ResponseEntity<AppResponse<Clothes>> getClothesById(@PathVariable Long id) {
         Clothes clothes = clothesService.getClothesById(id);
@@ -94,6 +127,7 @@ public class ClothesController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AppResponse<Clothes>> updateClothes(@PathVariable Long id, @RequestBody Clothes clothes) {
         Clothes existing = clothesService.getClothesById(id);
         TupleResponse<Boolean, String> validation = ProductUtils.isAValidProduct(clothes);
@@ -109,6 +143,7 @@ public class ClothesController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AppResponse<Boolean>> deleteClothes(@PathVariable Long id) {
         Clothes existing = clothesService.getClothesById(id);
         if (existing == null) {

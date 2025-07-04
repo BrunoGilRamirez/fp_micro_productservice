@@ -2,6 +2,7 @@ package com.aspiresys.fp_micro_productservice.product.subclasses.electronics;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -53,6 +54,7 @@ public class ElectronicsController {
     private ElectronicsService electronicsService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AppResponse<Electronics>> createElectronics(@RequestBody Electronics electronics) {
         electronics.setCategory("electronics"); // Ensure category is set
         TupleResponse<Boolean, String> validation = ProductUtils.isAValidProduct(electronics);
@@ -73,13 +75,33 @@ public class ElectronicsController {
                 ", warrantyPeriod=" + electronics.getWarrantyPeriod()), null));
         }
     }
-
+    /**
+     * Retrieves all Electronics items.
+     * <p>
+     * This endpoint must be public and accessible without authentication. When auth is implemented for this application,
+     * it should be accessible to all users, including unauthenticated ones.
+     * 
+     * @return ResponseEntity containing a list of Electronics items wrapped in AppResponse
+     * If no Electronics items are found, returns an empty list with a success message.
+     * </p>
+     */
     @GetMapping
     public ResponseEntity<AppResponse<List<Electronics>>> getAllElectronics() {
         List<Electronics> list = electronicsService.getAllElectronics();
         return ResponseEntity.ok(new AppResponse<>("Electronics list retrieved successfully", list));
     }
 
+    /**
+     * Retrieves an Electronics item by its ID.
+     * <p>
+     * This endpoint must be public and accessible without authentication. When auth is implemented for this application,
+     * it should be accessible to all users, including unauthenticated ones.
+     * 
+     * @param id the ID of the Electronics item to retrieve
+     * @return ResponseEntity containing the Electronics item wrapped in AppResponse
+     * If the Electronics item is not found, returns a 404 Not Found response.
+     * </p>
+     */
     @GetMapping("/{id}")
     public ResponseEntity<AppResponse<Electronics>> getElectronicsById(@PathVariable Long id) {
         Electronics electronics = electronicsService.getElectronicsById(id);
@@ -90,6 +112,7 @@ public class ElectronicsController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AppResponse<Electronics>> updateElectronics(@PathVariable Long id, @RequestBody Electronics electronics) {
         Electronics existing = electronicsService.getElectronicsById(id);
         TupleResponse<Boolean, String> validation = ProductUtils.isAValidProduct(electronics);
@@ -105,6 +128,7 @@ public class ElectronicsController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AppResponse<Boolean>> deleteElectronics(@PathVariable Long id) {
         Electronics existing = electronicsService.getElectronicsById(id);
         if (existing == null) {

@@ -2,6 +2,7 @@ package com.aspiresys.fp_micro_productservice.product.subclasses.electronics.sma
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -56,6 +57,7 @@ public class SmartphoneController {
     private SmartphoneService smartphoneService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AppResponse<Smartphone>> createSmartphone(@RequestBody Smartphone smartphone) {
         smartphone.setCategory("smartphone"); // Ensure category is set
         TupleResponse<Boolean, String> validation = ProductUtils.isAValidProduct(smartphone);
@@ -97,6 +99,7 @@ public class SmartphoneController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AppResponse<Smartphone>> updateSmartphone(@PathVariable Long id, @RequestBody Smartphone smartphone) {
         Smartphone existing = smartphoneService.getSmartphoneById(id);
         TupleResponse<Boolean, String> validation = ProductUtils.isAValidProduct(smartphone);
@@ -112,6 +115,7 @@ public class SmartphoneController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AppResponse<Boolean>> deleteSmartphone(@PathVariable Long id) {
         Smartphone existing = smartphoneService.getSmartphoneById(id);
         if (existing == null) {

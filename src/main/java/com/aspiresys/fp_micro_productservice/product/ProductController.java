@@ -41,14 +41,29 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    // Obtener todos los productos (de cualquier categoría)
+    /**
+     * This endpoint retrieves all products available in the system.
+     * <p>
+     * This endpoint must be public and accessible without authentication. When auth is implemented for this application,
+     * it should be accessible to all users, including unauthenticated ones.
+     * @return ResponseEntity containing a list of all products wrapped in AppResponse.
+     * </p>
+     */
     @GetMapping("")
     public ResponseEntity<AppResponse<List<Product>>> getAllProducts() {
         List<Product> products = productService.getAllProducts();
         return ResponseEntity.ok(new AppResponse<>("Product list retrieved successfully", products));
     }
 
-    // Endpoint para obtener todas las categorías disponibles
+    /**
+     * This endpoint retrieves all available product categories.
+     * 
+     * <p>
+     * This endpoint must be public and accessible without authentication. When auth is implemented for this application,
+     * it should be accessible to all users, including unauthenticated ones.
+     * @return ResponseEntity containing a list of product categories wrapped in AppResponse.
+     * </p>
+     */
     @GetMapping("/categories")
     public ResponseEntity<AppResponse<List<String>>> getCategories() {
         List<String> categories = Arrays.asList("clothes", "electronics", "smartphone");
