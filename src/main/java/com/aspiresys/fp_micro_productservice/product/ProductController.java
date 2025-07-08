@@ -10,6 +10,10 @@ import com.aspiresys.fp_micro_productservice.common.dto.AppResponse;
 
 import lombok.extern.java.Log;
 
+// AOP imports
+import com.aspiresys.fp_micro_productservice.aop.annotation.Auditable;
+import com.aspiresys.fp_micro_productservice.aop.annotation.ExecutionTime;
+
 /**
  * ProductController handles general REST API endpoints for managing products.
  * It provides endpoints to retrieve all products and available categories.
@@ -50,6 +54,8 @@ public class ProductController {
      * </p>
      */
     @GetMapping("")
+    @Auditable(operation = "GET_ALL_PRODUCTS", entityType = "Product", logResult = true)
+    @ExecutionTime(operation = "Retrieve All Products", warningThreshold = 800)
     public ResponseEntity<AppResponse<List<Product>>> getAllProducts() {
         List<Product> products = productService.getAllProducts();
         return ResponseEntity.ok(new AppResponse<>("Product list retrieved successfully", products));
@@ -65,6 +71,8 @@ public class ProductController {
      * </p>
      */
     @GetMapping("/categories")
+    @Auditable(operation = "GET_PRODUCT_CATEGORIES", entityType = "Category", logResult = true)
+    @ExecutionTime(operation = "Retrieve Product Categories", warningThreshold = 200)
     public ResponseEntity<AppResponse<List<String>>> getCategories() {
         List<String> categories = Arrays.asList("clothes", "electronics", "smartphone");
         return ResponseEntity.ok(new AppResponse<>("Categories retrieved successfully", categories));
