@@ -36,6 +36,12 @@ import java.util.stream.Collectors;
 @EnableMethodSecurity(prePostEnabled = true) // Habilita @PreAuthorize y @PostAuthorize
 public class SecurityConfig {
 
+    @Value("${service.env.frontend.server}")
+    private String frontendUrl;
+
+    @Value("${service.env.gateway.server}")
+    private String gatewayUrl;
+
     @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
     private String jwkSetUri;
 
@@ -114,8 +120,8 @@ public class SecurityConfig {
         
         // Permitir el origen del frontend y del gateway
         configuration.setAllowedOrigins(Arrays.asList(
-            "http://localhost:3000", // Frontend React
-            "http://localhost:8080"  // Gateway
+            frontendUrl,  // Frontend
+            gatewayUrl    // Gateway
         ));
         
         // Permitir todos los métodos HTTP necesarios
