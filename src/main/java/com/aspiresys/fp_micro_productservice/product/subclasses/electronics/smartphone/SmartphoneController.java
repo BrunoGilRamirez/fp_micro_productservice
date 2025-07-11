@@ -10,6 +10,7 @@ import com.aspiresys.fp_micro_productservice.common.dto.AppResponse;
 import com.aspiresys.fp_micro_productservice.product.ProductUtils;
 import com.aspiresys.fp_micro_productservice.product.ProductUtils.TupleResponse;
 import com.aspiresys.fp_micro_productservice.product.ProductException;
+import com.aspiresys.fp_micro_productservice.kafka.producer.ProductProducerService;
 
 import lombok.extern.java.Log;
 
@@ -56,6 +57,9 @@ public class SmartphoneController {
     @Autowired
     private SmartphoneService smartphoneService;
 
+    @Autowired
+    private ProductProducerService productProducerService;
+
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AppResponse<Smartphone>> createSmartphone(@RequestBody Smartphone smartphone) {
@@ -66,6 +70,16 @@ public class SmartphoneController {
         }
         try {
             Smartphone created = smartphoneService.saveSmartphone(smartphone);
+            
+            // Send product created event to Kafka
+            try {
+                productProducerService.sendProductCreated(created);
+                log.info("📱 Product created event sent to Kafka for smartphone ID: " + created.getId());
+            } catch (Exception kafkaException) {
+                log.warning("⚠️ Failed to send product created event to Kafka: " + kafkaException.getMessage());
+                // Product was created successfully, but Kafka failed - continue with success response
+            }
+            
             log.info("Smartphone created successfully: " + created);
             return ResponseEntity.ok(new AppResponse<>("Smartphone created successfully", created));
         } catch (ProductException ex) {
@@ -111,6 +125,16 @@ public class SmartphoneController {
         }
         smartphone.setId(id);
         Smartphone updated = smartphoneService.saveSmartphone(smartphone);
+        
+        // Send product updated event to Kafka
+        try {
+            productProducerService.sendProductUpdated(updated);
+            log.info("📱 Product updated event sent to Kafka for smartphone ID: " + updated.getId());
+        } catch (Exception kafkaException) {
+            log.warning("⚠️ Failed to send product updated event to Kafka: " + kafkaException.getMessage());
+            // Product was updated successfully, but Kafka failed - continue with success response
+        }
+        
         return ResponseEntity.ok(new AppResponse<>("Smartphone updated successfully", updated));
     }
 
@@ -121,6 +145,16 @@ public class SmartphoneController {
         if (existing == null) {
             return ResponseEntity.status(404).body(new AppResponse<>("Smartphone not found", false));
         }
+        
+        // Send product deleted event to Kafka before deleting
+        try {
+            productProducerService.sendProductDeleted(existing.getId());
+            log.info("📱 Product deleted event sent to Kafka for smartphone ID: " + existing.getId());
+        } catch (Exception kafkaException) {
+            log.warning("⚠️ Failed to send product deleted event to Kafka: " + kafkaException.getMessage());
+            // Continue with deletion even if Kafka fails
+        }
+        
         smartphoneService.deleteSmartphone(id);
         return ResponseEntity.ok(new AppResponse<>("Smartphone deleted successfully", true));
     }

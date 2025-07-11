@@ -27,7 +27,7 @@ public class ProductProducerService {
     @Autowired
     private KafkaTemplate<String, ProductMessage> kafkaTemplate;
 
-    @Value("${spring.kafka.topic.product}")
+    @Value("${kafka.topic.product:product}")
     private String productTopic;
 
     /**

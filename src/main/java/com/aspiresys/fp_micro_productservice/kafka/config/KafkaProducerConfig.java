@@ -1,10 +1,12 @@
 package com.aspiresys.fp_micro_productservice.kafka.config;
 
+import com.aspiresys.fp_micro_productservice.kafka.dto.ProductMessage;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
@@ -23,18 +25,19 @@ import java.util.Map;
  * @author bruno.gil
  */
 @Configuration
+@EnableKafka
 public class KafkaProducerConfig {
 
-    @Value("${spring.kafka.bootstrap-servers}")
+    @Value("${spring.kafka.bootstrap-servers:localhost:9092}")
     private String bootstrapServers;
 
     /**
      * Producer factory configuration for creating Kafka producers.
      *
-     * @return ProducerFactory configured for String keys and JSON values
+     * @return ProducerFactory configured for String keys and ProductMessage values
      */
     @Bean
-    public ProducerFactory<String, Object> producerFactory() {
+    public ProducerFactory<String, ProductMessage> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -44,12 +47,12 @@ public class KafkaProducerConfig {
     }
 
     /**
-     * Kafka template for sending messages to Kafka topics.
+     * Kafka template for sending ProductMessage objects to Kafka topics.
      *
      * @return KafkaTemplate configured with producer factory
      */
     @Bean
-    public KafkaTemplate<String, Object> kafkaTemplate() {
+    public KafkaTemplate<String, ProductMessage> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 }

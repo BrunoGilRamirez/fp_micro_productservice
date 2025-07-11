@@ -81,9 +81,9 @@ public class ClothesController {
             // Send product created event to Kafka
             try {
                 productProducerService.sendProductCreated(createdClothes);
-                log.info("Product created event sent to Kafka for clothes ID: " + createdClothes.getId());
+                log.info("👕 Product created event sent to Kafka for clothes ID: " + createdClothes.getId());
             } catch (Exception kafkaException) {
-                log.warning("Failed to send product created event to Kafka: " + kafkaException.getMessage());
+                log.warning("⚠️ Failed to send product created event to Kafka: " + kafkaException.getMessage());
                 // Product was created successfully, but Kafka failed - continue with success response
             }
             
@@ -153,6 +153,16 @@ public class ClothesController {
         }
         clothes.setId(id);
         Clothes updated = clothesService.saveClothes(clothes);
+        
+        // Send product updated event to Kafka
+        try {
+            productProducerService.sendProductUpdated(updated);
+            log.info("👕 Product updated event sent to Kafka for clothes ID: " + updated.getId());
+        } catch (Exception kafkaException) {
+            log.warning("⚠️ Failed to send product updated event to Kafka: " + kafkaException.getMessage());
+            // Product was updated successfully, but Kafka failed - continue with success response
+        }
+        
         return ResponseEntity.ok(new AppResponse<>("Clothes updated successfully", updated));
     }
 
@@ -163,6 +173,16 @@ public class ClothesController {
         if (existing == null) {
             return ResponseEntity.status(404).body(new AppResponse<>("Clothes not found", false));
         }
+        
+        // Send product deleted event to Kafka before deleting
+        try {
+            productProducerService.sendProductDeleted(existing.getId());
+            log.info("👕 Product deleted event sent to Kafka for clothes ID: " + existing.getId());
+        } catch (Exception kafkaException) {
+            log.warning("⚠️ Failed to send product deleted event to Kafka: " + kafkaException.getMessage());
+            // Continue with deletion even if Kafka fails
+        }
+        
         clothesService.deleteClothes(id);
         return ResponseEntity.ok(new AppResponse<>("Clothes deleted successfully", true));
     }
