@@ -10,6 +10,7 @@ import com.aspiresys.fp_micro_productservice.common.dto.AppResponse;
 import com.aspiresys.fp_micro_productservice.product.ProductUtils;
 import com.aspiresys.fp_micro_productservice.product.ProductUtils.TupleResponse;
 import com.aspiresys.fp_micro_productservice.product.ProductException;
+import com.aspiresys.fp_micro_productservice.kafka.producer.ProductProducerService;
 
 import lombok.extern.java.Log;
 
@@ -54,6 +55,9 @@ public class ClothesController {
     @Autowired
     private ClothesService clothesService;
 
+    @Autowired
+    private ProductProducerService productProducerService;
+
     /**
      * Creates a new Clothes item.
      * <p>
@@ -73,6 +77,16 @@ public class ClothesController {
         }
         try{
             Clothes createdClothes = clothesService.saveClothes(clothes);
+            
+            // Send product created event to Kafka
+            try {
+                productProducerService.sendProductCreated(createdClothes);
+                log.info("Product created event sent to Kafka for clothes ID: " + createdClothes.getId());
+            } catch (Exception kafkaException) {
+                log.warning("Failed to send product created event to Kafka: " + kafkaException.getMessage());
+                // Product was created successfully, but Kafka failed - continue with success response
+            }
+            
             return ResponseEntity.ok(new AppResponse<>("Clothes created successfully", createdClothes));
 
         }catch (ProductException ex) {

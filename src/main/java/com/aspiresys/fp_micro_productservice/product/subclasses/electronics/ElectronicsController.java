@@ -10,6 +10,7 @@ import com.aspiresys.fp_micro_productservice.common.dto.AppResponse;
 import com.aspiresys.fp_micro_productservice.product.ProductUtils;
 import com.aspiresys.fp_micro_productservice.product.ProductUtils.TupleResponse;
 import com.aspiresys.fp_micro_productservice.product.ProductException;
+import com.aspiresys.fp_micro_productservice.kafka.producer.ProductProducerService;
 
 import lombok.extern.java.Log;
 
@@ -53,6 +54,9 @@ public class ElectronicsController {
     @Autowired
     private ElectronicsService electronicsService;
 
+    @Autowired
+    private ProductProducerService productProducerService;
+
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AppResponse<Electronics>> createElectronics(@RequestBody Electronics electronics) {
@@ -63,6 +67,16 @@ public class ElectronicsController {
         }
         try {
             Electronics created = electronicsService.saveElectronics(electronics);
+            
+            // Send product created event to Kafka
+            try {
+                productProducerService.sendProductCreated(created);
+                log.info("Product created event sent to Kafka for electronics ID: " + created.getId());
+            } catch (Exception kafkaException) {
+                log.warning("Failed to send product created event to Kafka: " + kafkaException.getMessage());
+                // Product was created successfully, but Kafka failed - continue with success response
+            }
+            
             return ResponseEntity.ok(new AppResponse<>("Electronics created successfully", created));
         } catch (ProductException ex) {
             log.warning("Error creating electronics: " + ex.getMessage());
