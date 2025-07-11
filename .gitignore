@@ -37,3 +37,4 @@ build/
 logs/
 **/logs/
 **/*.log
+KAFKA_SYNC_API.md
