@@ -81,9 +81,9 @@ public class ClothesController {
             // Send product created event to Kafka
             try {
                 productProducerService.sendProductCreated(createdClothes);
-                log.info("👕 Product created event sent to Kafka for clothes ID: " + createdClothes.getId());
+                log.info("Product created event sent to Kafka for clothes ID: " + createdClothes.getId());
             } catch (Exception kafkaException) {
-                log.warning("⚠️ Failed to send product created event to Kafka: " + kafkaException.getMessage());
+                log.warning("Failed to send product created event to Kafka: " + kafkaException.getMessage());
                 // Product was created successfully, but Kafka failed - continue with success response
             }
             
@@ -157,9 +157,9 @@ public class ClothesController {
         // Send product updated event to Kafka
         try {
             productProducerService.sendProductUpdated(updated);
-            log.info("👕 Product updated event sent to Kafka for clothes ID: " + updated.getId());
+            log.info("Product updated event sent to Kafka for clothes ID: " + updated.getId());
         } catch (Exception kafkaException) {
-            log.warning("⚠️ Failed to send product updated event to Kafka: " + kafkaException.getMessage());
+            log.warning("Failed to send product updated event to Kafka: " + kafkaException.getMessage());
             // Product was updated successfully, but Kafka failed - continue with success response
         }
         
@@ -177,9 +177,9 @@ public class ClothesController {
         // Send product deleted event to Kafka before deleting
         try {
             productProducerService.sendProductDeleted(existing.getId());
-            log.info("👕 Product deleted event sent to Kafka for clothes ID: " + existing.getId());
+            log.info("Product deleted event sent to Kafka for clothes ID: " + existing.getId());
         } catch (Exception kafkaException) {
-            log.warning("⚠️ Failed to send product deleted event to Kafka: " + kafkaException.getMessage());
+            log.warning("Failed to send product deleted event to Kafka: " + kafkaException.getMessage());
             // Continue with deletion even if Kafka fails
         }
         
