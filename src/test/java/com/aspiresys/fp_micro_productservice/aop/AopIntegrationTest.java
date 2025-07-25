@@ -34,7 +34,10 @@ import java.util.Optional;
     "app.aop.performance.enabled=true", 
     "app.aop.validation.enabled=true",
     "spring.aop.auto=true",
-    "spring.aop.proxy-target-class=true"
+    "spring.aop.proxy-target-class=true",
+    "spring.cloud.config.enabled=false",
+    "spring.cloud.discovery.enabled=false",
+    "eureka.client.enabled=false"
 })
 public class AopIntegrationTest {
 

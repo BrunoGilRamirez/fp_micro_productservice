@@ -2,6 +2,7 @@ package com.aspiresys.fp_micro_productservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Profile;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +18,13 @@ public class FpMicroProductserviceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FpMicroProductserviceApplication.class, args);
 	}
-
+	
+	/**
+	 * CommandLineRunner to load initial data into the database.
+	 * This will only run when the application is started in a non-test profile.
+	 */
 	@Bean
+	@Profile("!test")// this bean will not be loaded in the test profile
 	public CommandLineRunner dataLoader(
 			@Autowired ClothesRepository clothesRepository,
 			@Autowired SmartphoneRepository smartphoneRepository) {
