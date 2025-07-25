@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Aspecto para medir el tiempo de ejecución de métodos en el servicio de productos.
- * Proporciona métricas de rendimiento y alertas de performance.
+ * Aspect for measuring method execution time.
+ * Provides performance metrics and performance alerts.
  * 
  * @author bruno.gil
  */
@@ -26,7 +26,8 @@ public class ExecutionTimeAspect {
     private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     
     /**
-     * Envuelve la ejecución del método para medir el tiempo
+     * Wraps method execution to measure time.
+     * Logs the start and end time, execution duration, and status.
      */
     @Around("@annotation(executionTime)")
     public Object measureExecutionTime(ProceedingJoinPoint joinPoint, ExecutionTime executionTime) throws Throwable {
@@ -48,7 +49,6 @@ public class ExecutionTimeAspect {
         Throwable exception = null;
         
         try {
-            // Ejecutar el método original
             result = joinPoint.proceed();
             return result;
         } catch (Throwable throwable) {
@@ -56,12 +56,10 @@ public class ExecutionTimeAspect {
             exception = throwable;
             throw throwable;
         } finally {
-            // Calcular tiempo de ejecución
             long endTime = System.currentTimeMillis();
             long executionTimeMs = endTime - startTime;
             String endTimestamp = LocalDateTime.now().format(TIMESTAMP_FORMAT);
             
-            // Crear log de performance
             StringBuilder perfLog = new StringBuilder();
             perfLog.append("\n[PRODUCT-PERFORMANCE-REPORT] ").append(endTimestamp);
             perfLog.append("\n|- Operation: ").append(operationName);
@@ -78,9 +76,8 @@ public class ExecutionTimeAspect {
                 }
             }
             
-            // Determinar el nivel de log basado en el tiempo de ejecución
             if (executionTimeMs > executionTime.warningThreshold()) {
-                perfLog.append("\n|_ ⚠️ WARNING: Execution time exceeded threshold (")
+                perfLog.append("\n|_ WARNING: Execution time exceeded threshold (")
                        .append(executionTime.warningThreshold()).append(" ms)");
                 log.warning(perfLog.toString());
             } else {
@@ -88,24 +85,23 @@ public class ExecutionTimeAspect {
                 log.info(perfLog.toString());
             }
             
-            // Log adicional para métricas (podría integrarse con sistemas de monitoreo)
             logMetrics(operationName, className, methodName, executionTimeMs, success);
         }
     }
     
     /**
-     * Registra métricas en formato estructurado para integración con sistemas de monitoreo
+     * Logs performance metrics for the operation.
+     * This could be integrated with monitoring systems like Prometheus or Micrometer.
      */
     private void logMetrics(String operation, String className, String methodName, 
                            long executionTime, boolean success) {
-        // Este método podría enviar métricas a sistemas como Prometheus, Micrometer, etc.
+        
         String metricsLog = String.format(
             "PRODUCT_METRICS|operation=%s|class=%s|method=%s|execution_time_ms=%d|success=%s|timestamp=%s",
             operation, className, methodName, executionTime, success, 
             LocalDateTime.now().format(TIMESTAMP_FORMAT)
         );
         
-        // Log separado para métricas (podría dirigirse a un appender específico)
         log.info("[PRODUCT-METRICS] " + metricsLog);
     }
 }

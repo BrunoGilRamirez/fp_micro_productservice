@@ -21,19 +21,19 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Configuración de seguridad para el Product Service.
- * 
- * Esta configuración:
- * - Configura el servicio como OAuth2 Resource Server con JWT
- * - Define las reglas de autorización para los endpoints
- * - Configura CORS para permitir acceso desde el frontend
- * - Convierte los claims del JWT en authorities de Spring Security
- * - Solo los ADMIN pueden crear, actualizar y eliminar productos
- * - Los productos pueden ser consultados públicamente
+ * Security configuration for the Product Service.
+ *
+ * This configuration:
+ * - Sets up the service as an OAuth2 Resource Server using JWT
+ * - Defines authorization rules for the endpoints
+ * - Configures CORS to allow access from the frontend
+ * - Converts JWT claims into Spring Security authorities
+ * - Restricts create, update, and delete operations to ADMIN role
+ * - Allows public access to product read endpoints
  */
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true) // Habilita @PreAuthorize y @PostAuthorize
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Value("${service.env.frontend.server}")
@@ -48,101 +48,87 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable()) // Desactiva CSRF para APIs REST
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Habilita CORS
+                .csrf(csrf -> csrf.disable()) // Disable CSRF for REST APIs
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authz -> authz
-                        // Endpoints públicos
-                        .requestMatchers(HttpMethod.GET, "/products").permitAll() // Consulta pública de productos
-                        .requestMatchers(HttpMethod.GET, "/products/**").permitAll() // Consulta pública de producto específico
-                        .requestMatchers("/actuator/**").permitAll() // Health checks
-                        
-                        // Endpoints que requieren rol ADMIN
-                        .requestMatchers(HttpMethod.POST, "/products").hasRole("ADMIN") // Crear producto
-                        .requestMatchers(HttpMethod.PUT, "/products/**").hasRole("ADMIN") // Actualizar producto
-                        .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole("ADMIN") // Eliminar producto
-                        
-                        // Cualquier otra petición requiere autenticación
+                        // Public endpoints
+                        .requestMatchers(HttpMethod.GET, "/products").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
+
+                        // Endpoints requiring ADMIN role
+                        .requestMatchers(HttpMethod.POST, "/products").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole("ADMIN")
+
+                        // All other requests require authentication
                         .anyRequest().authenticated()
                 )
-                // Configurar como servidor de recursos OAuth2 con JWT
                 .oauth2ResourceServer(oauth2 -> oauth2
-                    .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
                 .build();
     }
 
     /**
-     * Configuración del convertidor de autenticación JWT para extraer roles/authorities.
-     * Extrae los roles del claim 'authorities', 'roles' o 'scope' del JWT.
+     * Configures a JWT authentication converter to extract roles/authorities.
+     * Attempts to read from the 'authorities', 'roles', or 'scope' claim in the JWT.
      */
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(jwt -> {
-            // Intentar obtener authorities desde diferentes claims posibles
             Collection<String> authorities = null;
-            
-            // Primero intentar con 'authorities'
+
             if (jwt.hasClaim("authorities")) {
                 authorities = jwt.getClaimAsStringList("authorities");
-            }
-            // Si no existe, intentar con 'roles'
-            else if (jwt.hasClaim("roles")) {
+            } else if (jwt.hasClaim("roles")) {
                 authorities = jwt.getClaimAsStringList("roles");
-            }
-            // Si no existe, intentar con 'scope' (separado por espacios)
-            else if (jwt.hasClaim("scope")) {
+            } else if (jwt.hasClaim("scope")) {
                 String scope = jwt.getClaimAsString("scope");
                 authorities = Arrays.asList(scope.split(" "));
             }
-            
-            // Convertir a SimpleGrantedAuthority y asegurar prefijo ROLE_
+
             if (authorities != null) {
                 return authorities.stream()
-                        .map(authority -> authority.startsWith("ROLE_") ? authority : "ROLE_" + authority)
+                        .map(auth -> auth.startsWith("ROLE_") ? auth : "ROLE_" + auth)
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
             }
-            
-            return Arrays.asList(); // Retornar lista vacía si no hay authorities
+
+            return Arrays.asList();
         });
-        
+
         return converter;
     }
 
     /**
-     * Configuración CORS para permitir el acceso desde el frontend.
-     * Permite requests desde http://localhost:3000 (React frontend) y desde el gateway.
+     * CORS configuration to allow access from the frontend and gateway.
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
-        // Permitir el origen del frontend y del gateway
-        configuration.setAllowedOrigins(Arrays.asList(
-            frontendUrl,  // Frontend
-            gatewayUrl    // Gateway
-        ));
-        
-        // Permitir todos los métodos HTTP necesarios
+
+        // Allow the frontend and gateway origins
+        configuration.setAllowedOrigins(Arrays.asList(frontendUrl, gatewayUrl));
+
+        // Allow all necessary HTTP methods
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        
-        // Permitir todos los headers
+
+        // Allow all headers
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        
-        // Permitir cookies y credenciales
+
+        // Allow credentials (cookies)
         configuration.setAllowCredentials(true);
-        
-        // Configurar para todas las rutas
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-        
+
         return source;
     }
 
     /**
-     * Bean JwtDecoder para decodificar tokens JWT.
-     * Este bean es necesario para que Spring Security pueda validar los tokens JWT.
+     * JwtDecoder bean to decode and validate JWT tokens.
      */
     @Bean
     public JwtDecoder jwtDecoder() {

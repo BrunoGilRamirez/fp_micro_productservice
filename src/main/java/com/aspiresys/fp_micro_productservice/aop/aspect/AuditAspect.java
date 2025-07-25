@@ -19,8 +19,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 /**
- * Aspecto para auditar operaciones críticas del sistema de productos.
- * Registra automáticamente quién, qué, cuándo y el resultado de las operaciones.
+ * Aspect to audit critical system operations.
+ * Automatically logs who, what, when, and the result of operations.
  * 
  * @author bruno.gil
  */
@@ -32,7 +32,8 @@ public class AuditAspect {
     private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     /**
-     * Se ejecuta antes de métodos anotados con @Auditable
+     * It executes before methods annotated with @Auditable.
+     * Logs the operation details including user, operation name, entity type, class, method,
      */
     @Before("@annotation(auditable)")
     public void auditBefore(JoinPoint joinPoint, Auditable auditable) {
@@ -62,7 +63,8 @@ public class AuditAspect {
     }
     
     /**
-     * Se ejecuta después de la ejecución exitosa de métodos anotados con @Auditable
+     * It executes after the successful execution of methods annotated with @Auditable.
+     * Logs the operation details including operation name, status, and result.
      */
     @AfterReturning(pointcut = "@annotation(auditable)", returning = "result")
     public void auditAfterReturning(JoinPoint joinPoint, Auditable auditable, Object result) {
@@ -84,7 +86,9 @@ public class AuditAspect {
     }
     
     /**
-     * Se ejecuta cuando ocurre una excepción en métodos anotados con @Auditable
+     * It executes when an exception occurs in methods annotated with @Auditable.
+     * Logs the operation details including operation name, status, and exception details.
+     * 
      */
     @AfterThrowing(pointcut = "@annotation(auditable)", throwing = "exception")
     public void auditAfterThrowing(JoinPoint joinPoint, Auditable auditable, Throwable exception) {
@@ -104,7 +108,8 @@ public class AuditAspect {
     }
     
     /**
-     * Obtiene el email del usuario actual desde el contexto de seguridad
+     * It obtains the email of the current user from the security context.
+     * If the user is not authenticated, returns "SYSTEM".
      */
     private String getCurrentUserEmail() {
         try {
@@ -120,7 +125,8 @@ public class AuditAspect {
     }
     
     /**
-     * Convierte parámetros a string de forma segura, evitando información sensible
+     * Safely formats the parameter for logging.
+     * Avoids logging sensitive information such as passwords or credentials.
      */
     private String getSafeParameterString(Object parameter) {
         if (parameter == null) {

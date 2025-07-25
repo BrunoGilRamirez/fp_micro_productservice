@@ -16,8 +16,16 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Aspecto específico para operaciones de productos.
- * Proporciona logging especializado, validaciones de seguridad y métricas de negocio.
+ * Specific aspect for product operations.
+ * Provides specialized logging, security validations and business metrics.
+ * 
+ * Pointcuts are annotations to define where the aspect should apply.
+ * This aspect includes:
+ * - Logging before and after operations in the controller
+ * - Logging and additional validations for product modification operations
+ * - Logging after successful operations in the service
+ * - Logging when errors occur in the service
+ * - Additional specific validations for product operations
  * 
  * @author bruno.gil
  */
