@@ -4,42 +4,9 @@ The Product Service is a microservice responsible for managing products in the e
 
 This service is part of the FP microservices ecosystem and requires other services (Auth Service, Discovery Server, Config Server) to be running to function properly.
 
-## Table of Contents
+![Service Structure](<./diagrams/Final Project - ServiceStructure.png>)
 
-- [Main Technologies](#main-technologies)
-- [Key Components](#key-components)
-  - [Entities and Data Model](#1-entities-and-data-model)
-  - [REST Controllers](#2-rest-controllers)
-  - [Business Services](#3-business-services)
-  - [OAuth2 Security](#4-oauth2-security)
-  - [Kafka Integration - Event Publishing](#5-kafka-integration---event-publishing)
-  - [Aspect-Oriented Programming (AOP)](#6-aspect-oriented-programming-aop)
-- [Development Configuration](#development-configuration)
-  - [Prerequisites](#prerequisites)
-  - [Environment Variables](#environment-variables)
-  - [Database Setup](#database-setup)
-  - [Kafka Setup](#kafka-setup)
-- [API Endpoints](#api-endpoints)
-  - [Authentication Required](#authentication-required)
-  - [Public Endpoints](#public-endpoints)
-  - [Admin Endpoints (Role ADMIN)](#admin-endpoints-role-admin)
-- [Kafka Integration](#kafka-integration)
-  - [Publishing Product Events](#publishing-product-events)
-  - [Supported Event Types](#supported-event-types)
-- [Aspect-Oriented Programming](#aspect-oriented-programming)
-  - [Operation Auditing](#operation-auditing)
-  - [Performance Monitoring](#performance-monitoring)
-  - [Parameter Validation](#parameter-validation)
-- [Advanced Business Logic](#advanced-business-logic)
-  - [Product Entity Business Methods](#product-entity-business-methods)
-  - [Multi-Category Support](#multi-category-support)
-- [Logging Configuration](#logging-configuration)
-  - [Logback Configuration](#logback-configuration)
-  - [Log Structure](#log-structure)
-- [Running and Development](#running-and-development)
-  - [Build and Run](#build-and-run)
-  - [IDE Configuration](#ide-configuration)
-  - [Health Checks](#health-checks)
+![User Flow](<./diagrams/Final Project - UserFlow.png>)
 
 ---
 
