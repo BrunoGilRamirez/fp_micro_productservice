@@ -6,7 +6,7 @@ This service is part of the FP microservices ecosystem and requires other servic
 
 ![Service Structure](<./diagrams/Final Project - ServiceStructure.png>)
 
-![User Flow](<./diagrams/Final Project - UserFlow.png>)
+![Product Flow](<./diagrams/Final Project - ProductFlow.png>)
 
 ---
 
